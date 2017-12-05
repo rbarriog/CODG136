@@ -23,12 +23,14 @@
 
   
   <style>
+
         body {
             padding: 0px;
             margin: 0px;
             font-family: "Helvetica", sans-serif;
             overflow: hidden;
         }
+
         #map {
             position: absolute;
             left: 0;
@@ -36,6 +38,7 @@
             height: 100vh;
             z-index: 1;
         }
+
         #narration {
             position: absolute;
             width: 30vw;
@@ -45,7 +48,9 @@
             overflow: auto;
             z-index: 99;
             background: rgba(254,254,254, 1.0); /* to apply opacity background only. */
+
         }
+
         #contents {
             padding: 0%;
             width: 100%;
@@ -54,16 +59,19 @@
             overflow-y: scroll;
             overflow-x: hidden;
         }
+
         #contents .space-at-the-top {
             height: 30px;
             margin: 0px;
         }
+
         #contents .space-at-the-bottom {
             height: 600px;
             margin: 0px;
             text-align: center;
             padding-top: 70px;
         }
+
         #chapter {
             position: absolute;
             z-index: 999;
@@ -72,6 +80,7 @@
             text-align: center;
             color: #fff;
         }
+
         #title {
             position: absolute;
             right: 0px;
@@ -84,9 +93,11 @@
             padding: 0px;
             padding-bottom:10px
         }
+
         h3 {
             margin-bottom: 0px;
         }
+
         .image-container {
             /* margin + padding = imageContainerMargin in script.js */
             /* Important for scrolling! */
@@ -94,6 +105,7 @@
             padding: 25px 0 0 0;
             text-align: center;
         }
+
         .image-container img {
             height: auto;
             width: auto;
@@ -105,16 +117,19 @@
             /* Three lines that center vertically */
             position: relative;
         }
+
         .img-holder {
         display:inline-block;
             padding:10px;
             width: 100%;
         }
+
         .title-text {
             font-weight: bold;
             text-align: center;
             margin: 10px;
         }
+
         .chapter-header {
             display: block;
             text-align: center;
@@ -122,30 +137,36 @@
       			font-weight:bold;
       			margin-top:15px
         }
+
         .caption {
             font-size: 9pt;
             padding:0 10px 0 10px;
         }
+
         .description {
             text-align: justify;
             font-size: 11pt;
             padding: 30px;
             position: relative;
         }
+
         .inFocus {
             opacity: 1.0;
             background-color: #f0f0f0;
         }
+
         .outFocus {
             opacity: 0.3;
             background-color: white;
         }
 	
+
        /* Resize and position page elements and force collapse for Mobile and tablets */
         @media (max-width: 768px) {
           ::-webkit-scrollbar {
           display: none;
           }
+
           #map {
           width: 100%;
           height:50%;
@@ -156,9 +177,11 @@
           top:35%;
           width: 100%;
           }
+
           #title > h3 {
           font-size: 20px;
           }  
+
           #narration {
           position:fixed;
 		      width: 100%;
@@ -168,9 +191,11 @@
           padding:4px;
 		      bottom:0;
           }
+
           .description {
           padding: 10px;
           }
+
         }  	
 		
   </style>
@@ -180,8 +205,8 @@
 <body>
 	  
   <div id="title" class="title-text">
-    <h3>The Cherry Blossom Wonder</h3>
-    <small>Scroll down to view top festivals around the world <i class="fa fa-chevron-down"></i></small>
+    <h3>Ashbridge’s Bay Watershed Walk</h3>
+    <small>Scroll down to view stops along the tour path <i class="fa fa-chevron-down"></i></small>
   </div>
 
   <!--scrollable side panel container -->
@@ -199,19 +224,23 @@
   <script>
     // Value must match Margin + padding set in css for .image-container
     var imageContainerMargin = 50;  
+
     // This watches for the scrollable container
     var scrollPosition = 0;
     $('div#contents').scroll(function() {
       scrollPosition = $(this).scrollTop();
     });
+
     function initMap() {
+
       // This creates the Leaflet map with a generic start point, because code at bottom automatically fits bounds to all markers
       var map = L.map('map', {
-        center: [0, 0],
-        zoom: 5,
+        center: [42.189459, 71.542969],
+        zoom: 2,
     		maxZoom: 17,
     		minZoom: 14
       });
+
       // This displays a base layer map (other options available)
       // Using Carto Positron basemap
       // https://leaflet-extras.github.io/leaflet-providers/preview/
@@ -219,8 +248,9 @@
        //attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> //contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
      //}).addTo(map);
 	 var OpenStreetMap_HOT = L.tileLayer('https://api.mapbox.com/styles/v1/rbarrio/cjamru0m8dwcz2smikxp2atmy/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoicmJhcnJpbyIsImEiOiJjajlndzZyNTgyeW92Mnd0NDAwczN0eG93In0.g-phLT8JQGhwbELYUjMFBA', {
-          attribution: 'mapbox'
-  }).addTo(map);;
+		maxZoom: 19,
+		attribution: 'Mapbox'
+	}).addTo(map);;
 	  
       // This customizes link to view source code; add your own GitHub repository
       map.attributionControl
@@ -229,102 +259,144 @@
 	  
       // This loads the point GeoJSON map data file from a local folder
       // jQuery getJSON() method - http://api.jquery.com/jquery.getjson/
-      $.getJSON('map.geojson', function(data) {
+      $.getJSON('cherry.geojson.geojson', function(data) {
         var points = L.geoJson(data, {
           onEachFeature: function (feature, layer) {
             (function(layer, properties) {
-              // This creates numerical icons to match the attribute ID numbers
+              // This creates numerical icons to match the attribute NUMBER numbers
               // Setting icon using leaflet.extra-markers https://github.com/coryasilva/Leaflet.ExtraMarkers
               var numericMarker = L.ExtraMarkers.icon({
-                icon: 'fa-leaf',
+                icon: 'fa-number',
                 number: feature.properties['id'],
                 markerColor: 'pink'
               });
               layer.setIcon(numericMarker);
-              // Sets the title text from the geojson property chapter
+
+              // Sets the title text from the geojson property Name
               var chapter = $('<p></p>', {
                 text: feature.properties['chapter'],
                 class: 'chapter-header'
               });
-              // Sets the first image from the geojson property image
+
+              // Sets the first image from the geojson property PIC_URL
               var image = $('<img>', {
-                alt: feature.properties['alt'],
-                src: feature.properties['image']
+                src: feature.properties['image'],
               });
-              });
+
               // The image is placed inside an anchor that allows a user to click and display the picture in a new tab
-              var source = $('<a>', {
-                text: feature.properties['source-credit'],
-                href: feature.properties['source-link'],
+              var imgHolder = $('<a>', {
+                href: feature.properties['image'],
+                class: 'img-holder',
                 target: "_blank",
-                class: 'source'
               });
+              imgHolder.append(image);
+
+              // Sets the image caption content from the geojson property SHORT_DESC
+              var caption = $('<p></p>', {
+                text: feature.properties['alt'],
+                class: 'caption'
+              });
+
               // Sets the text content for the longer discription from the geojson property DESCRIPTION
               var description = $('<p></p>', {
                 text: feature.properties['description'],
                 class: 'description'
               });
-              
-   //           var description2 = $('<p></p>', {
-  //            text: feature.properties['DESC2'],
-     //           class: 'description'
-       //       });
-         //     };
+
+              // controls behaviour for second image
+              // if the json feature has a property 'pic_url_2' then display it
+              if (feature.properties['PIC_URL_2']){
+                var image2 = $('<img>', {
+                src: feature.properties['PIC_URL_2'],
+                });
+                
+                var imgHolder2 = $('<a>', {
+                href: feature.properties['PIC_URL_2'],
+                class: 'img-holder',
+                target: "_blank",
+                });
+                imgHolder2.append(image2);
+              };
+          
+              // controls behaviour for second description
+              // if the json feature has a property 'DESC2' value then display it
+              // if not using an if statement then a placeholder div is invluded in the contents
+              if (feature.properties['DESC2']){
+              // Sets the text content for the second discription from the geojson property DESC2
+              var description2 = $('<p></p>', {
+                text: feature.properties['DESC2'],
+                class: 'description'
+              });
+              };
+
               var container = $('<div></div>', {
                 id: 'container' + feature.properties['id'],
                 class: 'image-container'
               });
+
               // Appending the contents to be placed in the #contents div
-              container.append(chapter).append(image).append(source).append(description);
+              container.append(chapter).append(imgHolder).append(caption).append(description).append(imgHolder2).append(description2);
               $('#contents').append(container);
+
               // declaring global variables to be used below
               var i;
               var areaTop;
               var areaBottom; 
+
               // Function tied to when all images load or window is resized, it only initalises when all images have loaded or window resizes
               function updateScrollTop() {
               
               // height is based on the relative height from top of the container div
               areaTop = 0;
+
               // Calculating total height of blocks above active
               for (i = 1; i < feature.properties['id']; i++) {
                 areaTop += $('div#container' + i).height() + imageContainerMargin;
               }
-              areaBottom = areaTop + $('div#container' + feature.properties['NUMBER']).height();
+
+              areaBottom = areaTop + $('div#container' + feature.properties['id']).height();
+
               $('div#contents').scroll(function() {
                 if ($(this).scrollTop() >= areaTop && $(this).scrollTop() < areaBottom) {
                   $('.image-container').removeClass("inFocus").addClass("outFocus");
                   $('div#container' + feature.properties['id']).addClass("inFocus").removeClass("outFocus");
+
                   // when the contents scroll down zoom to the associated point
                   // First pulling lat/long from the geojson for the center and set to use zoom 16 for all
                   map.flyTo([feature.geometry.coordinates[1], feature.geometry.coordinates[0] ], 16);
                 }
               });
               }
+
               // Initialize scrolltop function when images load
               $("img").on("load", updateScrollTop);
               // Update container heights if the browser window changes size
               window.addEventListener('resize', updateScrollTop);         
+
               // Make markers clickable
               // When clicked #contents div scrolls to top of the #container corresponding to point clicked
               layer.on('click', function() {
                 $("div#contents").animate({scrollTop: areaTop + 1 + "px"});
               });
+
             })(layer, feature.properties);
           }
         });
+
         
         $('#contents').append("<div class='space-at-the-bottom'><a href='#space-at-the-top'><i class='fa fa-chevron-up'></i></br><small>Top</small></a></div>");
         
         // fits the map view to fit the bounds of te points layer when the map loads
         map.fitBounds(points.getBounds());
+
         // add points layer to the map
         points.addTo(map);
       });
 	  
   	  
-      
-    
+
+    };
+
 	initMap();	
 	
   </script>
